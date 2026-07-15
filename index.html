@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tribe of Roaring Thunder</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="login-screen">
+    <div class="login-container">
+      <h1>Tribe of Roaring Thunder</h1>
+      <p class="subtitle">Enter the world of your Tribe</p>
+
+      <div id="loading-panel" class="panel">
+        <p>Loading...</p>
+      </div>
+
+      <div id="create-form" class="panel hidden">
+        <h2>Create Your Cat</h2>
+        <div class="name-row">
+          <div class="form-group">
+            <label>Prefix</label>
+            <input type="text" id="name-prefix" placeholder="Jade" maxlength="12" autocomplete="off">
+          </div>
+          <span class="name-sep">+</span>
+          <div class="form-group">
+            <label>Suffix</label>
+            <input type="text" id="name-suffix" placeholder="wind" maxlength="12" autocomplete="off">
+          </div>
+        </div>
+        <div class="name-preview" id="name-preview">…</div>
+        <div class="form-group">
+          <label>Cat Color <small>(sprites coming soon)</small></label>
+          <input type="color" id="cat-color" value="#FF8C00">
+        </div>
+        <button id="join-btn" class="btn-primary">Join the Tribe</button>
+        <p class="error-msg" id="error-msg"></p>
+      </div>
+
+      <div id="returning-panel" class="panel hidden">
+        <h2>Welcome Back</h2>
+        <p id="returning-name" class="returning-name-text"></p>
+        <button id="continue-btn" class="btn-primary">Continue</button>
+        <button id="new-char-btn" class="btn-secondary">New Character</button>
+      </div>
+    </div>
+  </div>
+  <script src="js/auth.js"></script>
+</body>
+</html>

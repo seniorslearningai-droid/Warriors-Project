@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tribe of Roaring Thunder</title>
+  <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+  <canvas id="game-canvas"></canvas>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div id="player-info">
+      <span id="hud-name">Loading...</span>
+      <span id="hud-rank" class="rank-badge"></span>
+    </div>
+    <div id="time-display">
+      <span id="time-icon">☀️</span>
+      <span id="time-label">Day</span>
+    </div>
+  </div>
+
+  <!-- Interaction prompt -->
+  <div id="interaction-prompt" class="hidden">
+    <span id="prompt-text"></span>
+  </div>
+
+  <!-- Den popup -->
+  <div id="popup-overlay" class="hidden">
+    <div id="popup-box">
+      <button id="popup-close" class="popup-close-btn">✕</button>
+      <div id="popup-content"></div>
+    </div>
+  </div>
+
+  <!-- Chat -->
+  <div id="chat-container">
+    <div id="chat-messages"></div>
+    <div id="chat-input-row">
+      <input type="text" id="chat-input" placeholder="Speak... (Enter to send)" maxlength="200" autocomplete="off">
+      <button id="chat-send-btn">▶</button>
+    </div>
+  </div>
+
+  <!-- Announcements -->
+  <div id="announcement-bar" class="hidden">
+    <span id="announcement-text"></span>
+  </div>
+
+  <script type="module" src="js/game.js"></script>
+</body>
+</html>
