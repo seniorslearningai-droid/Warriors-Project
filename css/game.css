@@ -1,6 +1,6 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-body { background: #060a04; overflow: hidden; font-family: 'Georgia', serif; }
+body { background: #3a8c1a; overflow: hidden; font-family: 'Georgia', serif; }
 
 #game-canvas { display: block; }
 
@@ -12,37 +12,41 @@ body { background: #060a04; overflow: hidden; font-family: 'Georgia', serif; }
 }
 
 #player-info {
-  background: rgba(6,10,4,0.88);
-  border: 1px solid #2a3a14;
+  background: rgba(240,255,220,0.92);
+  border: 2px solid #70c030;
   border-radius: 8px;
   padding: 7px 14px;
   display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 2px 8px rgba(0,80,0,0.2);
 }
 
-#hud-name { color: #c8d848; font-size: 0.92rem; font-weight: bold; }
+#hud-name { color: #2a6010; font-size: 0.92rem; font-weight: bold; }
 
 .rank-badge {
   font-size: 0.72rem; padding: 2px 6px;
-  border-radius: 4px; background: #141e08; color: #8aaa30;
+  border-radius: 4px; background: #c8f080; color: #2a6010;
+  font-weight: bold;
 }
 
 #time-display {
-  background: rgba(6,10,4,0.88);
-  border: 1px solid #2a3a14;
+  background: rgba(240,255,220,0.92);
+  border: 2px solid #70c030;
   border-radius: 8px;
   padding: 7px 12px;
   display: flex; align-items: center; gap: 6px;
-  color: #8aaa30; font-size: 0.82rem;
+  color: #2a6010; font-size: 0.82rem; font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0,80,0,0.2);
 }
 
 /* ── Interaction prompt ───────────────────────────────────────────────── */
 #interaction-prompt {
   position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
-  background: rgba(6,10,4,0.92);
-  border: 1px solid #4a6a18;
+  background: rgba(240,255,220,0.95);
+  border: 2px solid #70c030;
   border-radius: 8px; padding: 7px 18px;
-  color: #c8d848; font-size: 0.88rem;
+  color: #2a6010; font-size: 0.88rem; font-weight: bold;
   z-index: 100; pointer-events: none;
+  box-shadow: 0 2px 12px rgba(0,120,0,0.25);
   animation: blink 1.6s infinite;
 }
 @keyframes blink {
@@ -59,34 +63,35 @@ body { background: #060a04; overflow: hidden; font-family: 'Georgia', serif; }
 }
 
 #popup-box {
-  background: #080c05;
-  border: 1px solid #3a5018;
+  background: #f5ffe8;
+  border: 2px solid #70c030;
   border-radius: 12px;
   padding: 1.8rem; max-width: 460px; width: 90%;
   max-height: 80vh; overflow-y: auto;
   position: relative;
-  box-shadow: 0 10px 48px rgba(0,0,0,0.9);
+  box-shadow: 0 10px 48px rgba(0,80,0,0.25);
 }
 
 .popup-close-btn {
   position: absolute; top: 12px; right: 12px;
   background: transparent; border: none;
-  color: #3a5020; font-size: 1.05rem; cursor: pointer; padding: 4px 8px;
+  color: #80b030; font-size: 1.05rem; cursor: pointer; padding: 4px 8px;
 }
-.popup-close-btn:hover { color: #c8d848; }
+.popup-close-btn:hover { color: #2a6010; }
 
-#popup-content h2 { color: #c8d848; font-size: 1.2rem; margin-bottom: 0.9rem; padding-right: 2rem; }
-#popup-content p  { color: #7a9040; font-size: 0.88rem; margin-bottom: 1rem; line-height: 1.5; }
+#popup-content h2 { color: #2a6010; font-size: 1.2rem; margin-bottom: 0.9rem; padding-right: 2rem; }
+#popup-content p  { color: #5a8030; font-size: 0.88rem; margin-bottom: 1rem; line-height: 1.5; }
 
 .popup-btn {
   display: block; width: 100%;
-  background: #111a08; border: 1px solid #3a5018;
+  background: #e8f8d0; border: 2px solid #80c040;
   border-radius: 7px; padding: 0.65rem 1rem;
-  color: #b0c038; font-family: 'Georgia', serif; font-size: 0.88rem;
+  color: #2a6010; font-family: 'Georgia', serif; font-size: 0.88rem;
   cursor: pointer; margin-bottom: 0.5rem; text-align: left;
   transition: background 0.14s;
+  font-weight: bold;
 }
-.popup-btn:hover { background: #1a2810; }
+.popup-btn:hover { background: #d0f0b0; }
 
 /* ── Chat ─────────────────────────────────────────────────────────────── */
 #chat-container {
@@ -95,43 +100,43 @@ body { background: #060a04; overflow: hidden; font-family: 'Georgia', serif; }
 }
 
 #chat-messages {
-  background: rgba(6,10,4,0.82);
-  border: 1px solid #1e2e10;
+  background: rgba(240,255,220,0.92);
+  border: 2px solid #70c030;
   border-radius: 8px 8px 0 0;
   height: 160px; overflow-y: auto;
   padding: 8px; display: flex; flex-direction: column; gap: 4px;
 }
 #chat-messages::-webkit-scrollbar { width: 3px; }
-#chat-messages::-webkit-scrollbar-thumb { background: #2a3a14; border-radius: 2px; }
+#chat-messages::-webkit-scrollbar-thumb { background: #90cc40; border-radius: 2px; }
 
 .chat-msg { font-size: 0.8rem; line-height: 1.3; word-break: break-word; }
-.chat-msg .sender { color: #a0b830; font-weight: bold; }
-.chat-msg .text   { color: #687a30; }
-.chat-msg.system  { color: #3a5020; font-style: italic; }
+.chat-msg .sender { color: #2a6010; font-weight: bold; }
+.chat-msg .text   { color: #4a7820; }
+.chat-msg.system  { color: #7ab040; font-style: italic; }
 
 .chat-msg.announcement {
-  background: rgba(30,48,10,0.45);
-  border-left: 2px solid #c8d848;
+  background: rgba(200,240,150,0.5);
+  border-left: 3px solid #4a9a18;
   padding: 3px 6px; border-radius: 0 4px 4px 0;
 }
-.chat-msg.announcement .sender { color: #c8d848; }
+.chat-msg.announcement .sender { color: #2a6010; }
 
 #chat-input-row { display: flex; gap: 3px; }
 
 #chat-input {
-  flex: 1; background: #080c05;
-  border: 1px solid #1e2e10; border-top: none; border-radius: 0 0 0 8px;
-  padding: 7px 9px; color: #a0b830;
+  flex: 1; background: #ffffff;
+  border: 2px solid #70c030; border-top: none; border-radius: 0 0 0 8px;
+  padding: 7px 9px; color: #2a6010;
   font-family: 'Georgia', serif; font-size: 0.8rem; outline: none;
 }
-#chat-input:focus { border-color: #3a5018; }
+#chat-input:focus { border-color: #4a9a18; }
 
 #chat-send-btn {
-  background: #111a08; border: 1px solid #1e2e10;
+  background: #4a9a18; border: 2px solid #70c030;
   border-top: none; border-left: none; border-radius: 0 0 8px 0;
-  padding: 7px 11px; color: #8aaa30; cursor: pointer; font-size: 0.85rem;
+  padding: 7px 11px; color: #ffffff; cursor: pointer; font-size: 0.85rem; font-weight: bold;
 }
-#chat-send-btn:hover { background: #1a2810; }
+#chat-send-btn:hover { background: #5ab020; }
 
 /* ── Announcements ────────────────────────────────────────────────────── */
 #announcement-bar {
