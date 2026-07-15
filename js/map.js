@@ -182,11 +182,7 @@ function drawClearing(ctx) {
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // Label
-  ctx.fillStyle = 'rgba(80,120,20,0.4)';
-  ctx.font = 'bold 18px Georgia, serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('~ Camp ~', 1500, 1290);
+  labelTag(ctx, '~ Camp ~', 1500, 1290, 15);
 }
 
 function drawArea(ctx, area) {
@@ -201,11 +197,8 @@ function drawArea(ctx, area) {
   rrect(ctx, area.x, area.y, area.w, area.h, 10);
   ctx.stroke();
 
-  // Label
-  ctx.fillStyle = '#5a3a10';
-  ctx.font = 'bold 13px Georgia, serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(area.label, area.x + area.w / 2, area.y + 22);
+  // Label with readable background
+  labelTag(ctx, area.label, area.x + area.w / 2, area.y + 22, 13);
 
   // Entrance marker
   if (area.entrance) {
@@ -278,10 +271,7 @@ function drawStream(ctx) {
   ctx.ellipse(370, 925, 55, 22, 0, 0, Math.PI * 2);
   ctx.stroke();
 
-  ctx.fillStyle = '#1870b0';
-  ctx.font = 'italic 12px Georgia, serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('Drinking Pool', 370, 930);
+  labelTag(ctx, 'Drinking Pool', 370, 930, 12);
 }
 
 function drawTrails(ctx) {
@@ -415,6 +405,19 @@ function flowerCluster(ctx, x, y) {
 function inCamp(x, y, margin = 0) {
   return x > CAMP.x - margin && x < CAMP.x + CAMP.w + margin &&
          y > CAMP.y - margin && y < CAMP.y + CAMP.h + margin;
+}
+
+function labelTag(ctx, text, cx, cy, fontSize = 13) {
+  ctx.font = `bold ${fontSize}px Georgia, serif`;
+  ctx.textAlign = 'center';
+  const tw = ctx.measureText(text).width;
+  // White pill background
+  ctx.fillStyle = 'rgba(255,255,245,0.88)';
+  rrect(ctx, cx - tw / 2 - 7, cy - fontSize, tw + 14, fontSize + 6, 4);
+  ctx.fill();
+  // Dark text
+  ctx.fillStyle = '#2a4a10';
+  ctx.fillText(text, cx, cy);
 }
 
 function rrect(ctx, x, y, w, h, r) {
