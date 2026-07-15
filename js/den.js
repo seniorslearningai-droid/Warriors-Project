@@ -46,7 +46,7 @@ export function renderDenInterior(ctx, w, h, den, player, hoveredNest) {
     drawNest(ctx, x * w, y * h, nr, i === hoveredNest, name);
   }
 
-  // Player cat — awake: at entrance bottom-center; asleep: in their nest
+  // Player awake → show at entrance; asleep → show sleeping sprite on their nest
   if (!player.asleep) {
     ctx.save();
     ctx.translate(w / 2, h * 0.83);
@@ -59,6 +59,15 @@ export function renderDenInterior(ctx, w, h, den, player, hoveredNest) {
       renderPlayer(ctx, { ...player, x: 0, y: 0 }, true);
     }
     ctx.restore();
+  } else {
+    // Find this player's nest by name and draw sleeping sprite on it
+    const nestIdx = NESTS.findIndex(n => n.name && n.name.toLowerCase() === player.name.toLowerCase());
+    const sleepSprite = getSleepSprite(player.name);
+    if (sleepSprite && nestIdx >= 0) {
+      const { x, y } = NESTS[nestIdx];
+      const size = nr * 2.6;
+      ctx.drawImage(sleepSprite, x * w - size / 2, y * h - size * 0.55, size, size * 0.85);
+    }
   }
 
   // Den title at top
@@ -74,35 +83,19 @@ export function renderDenInterior(ctx, w, h, den, player, hoveredNest) {
   drawLeaveBtn(ctx, h);
 }
 
-export function renderSleepOverlay(ctx, w, h, player) {
-  // Soft night vignette
-  ctx.fillStyle = 'rgba(10, 5, 2, 0.55)';
+export function renderSleepOverlay(ctx, w, h) {
+  // Subtle night tint — den and sleeping sprites on nests remain visible
+  ctx.fillStyle = 'rgba(8, 4, 1, 0.38)';
   ctx.fillRect(0, 0, w, h);
 
-  // Stars
-  ctx.fillStyle = 'rgba(220,230,255,0.65)';
-  for (let i = 0; i < 30; i++) {
+  // A few stars near the top
+  ctx.fillStyle = 'rgba(220,230,255,0.7)';
+  for (let i = 0; i < 22; i++) {
     const sx = lcg(i * 7 + 3, w);
-    const sy = lcg(i * 7 + 11, h * 0.45);
-    const sr = 0.8 + lcg(i * 7 + 17, 1.5);
+    const sy = lcg(i * 7 + 11, h * 0.28);
+    const sr = 0.7 + lcg(i * 7 + 17, 1.4);
     ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI * 2); ctx.fill();
   }
-
-  // Sleeping cat sprite in nest area (center of screen)
-  const sleepSprite = player && getSleepSprite(player.name);
-  if (sleepSprite) {
-    const sh = h * 0.28, sw = sh;
-    ctx.drawImage(sleepSprite, (w - sw) / 2, h * 0.38, sw, sh);
-  }
-
-  // z z z above the cat
-  ctx.fillStyle = '#c8d8f8';
-  ctx.font = `bold ${Math.round(h * 0.055)}px Georgia, serif`;
-  ctx.textAlign = 'center';
-  ctx.shadowColor = 'rgba(0,0,0,0.6)';
-  ctx.shadowBlur = 6;
-  ctx.fillText('z  z  z', w / 2, h * 0.36);
-  ctx.shadowBlur = 0;
 
   drawWakeBtn(ctx, w, h);
 }
