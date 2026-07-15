@@ -193,7 +193,6 @@ function enterOrShowPopup(area) {
     state.denView = area;
     state.hoveredNest = -1;
     document.getElementById('interaction-prompt')?.classList.add('hidden');
-    addSystemMsg(`You enter ${area.label}.`);
   } else {
     showDenPopup(area);
   }
@@ -203,7 +202,6 @@ function exitDen() {
   state.denView = null;
   state.hoveredNest = -1;
   state.player.asleep = false;
-  addSystemMsg('You leave the den.');
 }
 
 function handleNestClick() {
@@ -213,7 +211,6 @@ function handleNestClick() {
   } else {
     // No notes — sleep immediately
     state.player.asleep = true;
-    addSystemMsg('You curl up in the nest and fall asleep.');
   }
 }
 
@@ -246,12 +243,10 @@ function showNotesPopup(notes) {
   document.getElementById('btn-read-sleep')?.addEventListener('click', () => {
     closePopup();
     state.player.asleep = true;
-    addSystemMsg('You read your notes and fall asleep.');
   });
   document.getElementById('btn-skip-sleep')?.addEventListener('click', () => {
     closePopup();
     state.player.asleep = true;
-    addSystemMsg('You curl up in the nest and fall asleep.');
   });
 }
 
@@ -270,7 +265,6 @@ function showDenPopup(area) {
 
   document.getElementById('btn-enter')?.addEventListener('click', () => {
     closePopup();
-    addSystemMsg(`You look at ${area.label}.`);
   });
 }
 
