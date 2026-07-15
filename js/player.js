@@ -1,4 +1,4 @@
-import { getSprite } from './sprites.js';
+import { getSprite, getSleepSprite } from './sprites.js';
 
 export const SPEED = 3;
 
@@ -12,17 +12,11 @@ export function renderPlayer(ctx, player, isLocal) {
   ctx.save();
   ctx.translate(x, y);
 
-  const sprite = getSprite(name);
+  const sprite = asleep ? (getSleepSprite(name) || getSprite(name)) : getSprite(name);
   if (sprite) {
-    // Photo sprite — draw slightly wider than tall to match cat proportions
-    const sw = 46, sh = 32;
+    // Sleep sprite is roughly square; walking sprite is wider
+    const sh = 34, sw = asleep ? sh : sh * 1.4;
     ctx.drawImage(sprite, -sw / 2, -sh / 2, sw, sh);
-    if (asleep) {
-      ctx.fillStyle = '#9090ff';
-      ctx.font = 'bold 10px sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText('z z', sw / 2 - 4, -sh / 2 - 4);
-    }
   } else {
     drawCatShape(ctx, color, isLocal, asleep);
   }

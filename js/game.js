@@ -114,7 +114,7 @@ function render() {
     // Den interior — no camera offset, fixed viewport
     renderDenInterior(ctx, canvas.width, canvas.height, denView, player, hoveredNest);
     if (player.asleep) {
-      renderSleepOverlay(ctx, canvas.width, canvas.height);
+      renderSleepOverlay(ctx, canvas.width, canvas.height, player);
     }
   } else {
     ctx.translate(-camera.x, -camera.y);
