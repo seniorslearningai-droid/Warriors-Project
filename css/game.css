@@ -152,4 +152,63 @@ body { background: #3a8c1a; overflow: hidden; font-family: 'Georgia', serif; }
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
+/* ── Character Panel ──────────────────────────────────────────────────── */
+#char-toggle-btn {
+  position: fixed; left: 0; top: 50%; transform: translateY(-50%);
+  width: 28px; height: 72px;
+  background: rgba(20,40,8,0.94);
+  border: 2px solid #70c030; border-left: none;
+  border-radius: 0 8px 8px 0;
+  color: #c8f080; font-size: 1.1rem;
+  cursor: pointer; z-index: 110;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.14s, left 0.25s;
+  padding: 0;
+}
+#char-toggle-btn:hover { background: rgba(50,90,15,0.98); }
+#char-toggle-btn.open { left: 190px; }
+
+#char-panel {
+  position: fixed; left: -194px; top: 50%; transform: translateY(-50%);
+  width: 190px;
+  background: rgba(14,28,5,0.97);
+  border: 2px solid #70c030; border-left: none; border-radius: 0 10px 10px 0;
+  padding: 12px 8px 14px;
+  z-index: 109;
+  transition: left 0.25s ease;
+  max-height: 70vh; overflow-y: auto;
+}
+#char-panel.open { left: 0; }
+
+.char-panel-title {
+  color: #c8f080; font-size: 0.75rem; font-weight: bold;
+  text-align: center; letter-spacing: 1px; text-transform: uppercase;
+  border-bottom: 1px solid rgba(112,192,48,0.35);
+  padding-bottom: 7px; margin-bottom: 9px;
+}
+
+.char-card {
+  display: flex; align-items: center; gap: 9px;
+  padding: 7px 8px; border-radius: 7px; margin-bottom: 5px;
+  cursor: pointer;
+  background: rgba(40,70,12,0.55);
+  border: 1px solid transparent;
+  transition: background 0.13s, border-color 0.13s;
+}
+.char-card:hover  { background: rgba(60,100,18,0.75); border-color: #70c030; }
+.char-card.active { background: rgba(50,90,14,0.95);  border-color: #c8f080; }
+
+.char-portrait {
+  width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+  background: rgba(0,0,0,0.45);
+  border: 2px solid rgba(112,192,48,0.55);
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.char-portrait img { width: 130%; height: 130%; object-fit: cover; object-position: center top; }
+
+.char-info { flex: 1; min-width: 0; }
+.char-name { color: #e8f8c0; font-size: 0.82rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.char-rank { color: #80b838; font-size: 0.68rem; text-transform: capitalize; margin-top: 1px; }
+
 .hidden { display: none !important; }

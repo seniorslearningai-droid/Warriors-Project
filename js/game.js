@@ -2,6 +2,12 @@ import { getMapCache, WORLD_W, WORLD_H, getDenAtPoint } from './map.js';
 import { renderPlayer, SPEED } from './player.js';
 import { renderDenInterior, renderSleepOverlay, getNestAtPoint, isLeaveBtn, isWakeBtn, canSleepOnNest } from './den.js';
 
+// ─── Characters ──────────────────────────────────────────────────────────────
+const CHARACTERS = [
+  { name: 'Goldpelt', rank: 'warrior', color: '#FF8C00', sprite: 'sprites/goldpelt.png?v=2' },
+  { name: 'Jadewind', rank: 'leader',  color: '#b87040', sprite: 'sprites/jadewind.webp?v=2' },
+];
+
 // ─── State ────────────────────────────────────────────────────────────────────
 const state = {
   player: {
@@ -60,6 +66,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   updateHUD();
+  initCharPanel();
   requestAnimationFrame(loop);
 });
 
@@ -288,6 +295,52 @@ function updateHUD() {
   const rankEl = document.getElementById('hud-rank');
   if (nameEl) nameEl.textContent = p.name;
   if (rankEl) rankEl.textContent = p.rank;
+}
+
+// ─── Character Panel ──────────────────────────────────────────────────────────
+function initCharPanel() {
+  const btn = document.getElementById('char-toggle-btn');
+  const panel = document.getElementById('char-panel');
+  btn?.addEventListener('click', () => {
+    const open = panel.classList.toggle('open');
+    btn.classList.toggle('open', open);
+  });
+  renderCharPanel();
+}
+
+function renderCharPanel() {
+  const list = document.getElementById('char-list');
+  if (!list) return;
+  list.innerHTML = '';
+  for (const char of CHARACTERS) {
+    const card = document.createElement('div');
+    card.className = 'char-card' + (char.name === state.player.name ? ' active' : '');
+    card.innerHTML = `
+      <div class="char-portrait">
+        <img src="${char.sprite}" alt="" onerror="this.style.display='none'">
+      </div>
+      <div class="char-info">
+        <div class="char-name">${char.name}</div>
+        <div class="char-rank">[${char.rank}]</div>
+      </div>`;
+    card.addEventListener('click', () => switchCharacter(char));
+    list.appendChild(card);
+  }
+}
+
+function switchCharacter(char) {
+  // Reset den state so nest permissions re-evaluate for the new character
+  if (state.denView) {
+    state.player.asleep = false;
+    state.sleepingNestIdx = -1;
+    state.hoveredNest = -1;
+  }
+  state.player.name  = char.name;
+  state.player.color = char.color;
+  state.player.rank  = char.rank;
+  localStorage.setItem('tribeCat', JSON.stringify({ name: char.name, color: char.color, rank: char.rank }));
+  updateHUD();
+  renderCharPanel();
 }
 
 function addSystemMsg(text) {
