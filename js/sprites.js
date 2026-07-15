@@ -7,7 +7,7 @@ function tryLoad(key, formats) {
   const img = new Image();
   img.onload = () => cache.set(key, img);
   img.onerror = () => tryLoad(key, rest); // try next format
-  img.src = `sprites/${key}.${fmt}?v=2`;
+  img.src = `sprites/${key}.${fmt}?v=3`;
 }
 
 function load(key) {

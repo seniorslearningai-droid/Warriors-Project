@@ -4,8 +4,8 @@ import { renderDenInterior, renderSleepOverlay, getNestAtPoint, isLeaveBtn, isWa
 
 // ─── Characters ──────────────────────────────────────────────────────────────
 const CHARACTERS = [
-  { name: 'Goldpelt', rank: 'warrior', color: '#FF8C00', sprite: 'sprites/goldpelt.png?v=2' },
-  { name: 'Jadewind', rank: 'leader',  color: '#b87040', sprite: 'sprites/jadewind.webp?v=2' },
+  { name: 'Goldpelt', rank: 'warrior', color: '#FF8C00', sprite: 'sprites/goldpelt.png?v=3' },
+  { name: 'Jadewind', rank: 'leader',  color: '#b87040', sprite: 'sprites/jadewind.png?v=3' },
 ];
 
 // ─── State ────────────────────────────────────────────────────────────────────
