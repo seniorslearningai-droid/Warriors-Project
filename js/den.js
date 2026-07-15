@@ -4,12 +4,12 @@ const CAT_SCALE = 2.8;
 
 // Nest positions as fractions of viewport (w, h)
 const NESTS = [
-  { x: 0.18, y: 0.46 },
-  { x: 0.38, y: 0.46 },
-  { x: 0.62, y: 0.46 },
-  { x: 0.82, y: 0.46 },
-  { x: 0.28, y: 0.68 },
-  { x: 0.72, y: 0.68 },
+  { x: 0.18, y: 0.46, name: 'Goldpelt' },
+  { x: 0.38, y: 0.46, name: '' },
+  { x: 0.62, y: 0.46, name: '' },
+  { x: 0.82, y: 0.46, name: '' },
+  { x: 0.28, y: 0.68, name: '' },
+  { x: 0.72, y: 0.68, name: '' },
 ];
 
 const NEST_R_FRAC = 0.068;
@@ -41,8 +41,8 @@ export function renderDenInterior(ctx, w, h, den, player, hoveredNest) {
   // Nests
   const nr = w * NEST_R_FRAC;
   for (let i = 0; i < NESTS.length; i++) {
-    const { x, y } = NESTS[i];
-    drawNest(ctx, x * w, y * h, nr, i === hoveredNest);
+    const { x, y, name } = NESTS[i];
+    drawNest(ctx, x * w, y * h, nr, i === hoveredNest, name);
   }
 
   // Player cat — larger scale, at bottom-center (entrance)
@@ -164,7 +164,7 @@ function drawWoodFloor(ctx, w, h) {
   }
 }
 
-function drawNest(ctx, x, y, r, hovered) {
+function drawNest(ctx, x, y, r, hovered, name) {
   // Shadow
   ctx.fillStyle = 'rgba(0,0,0,0.28)';
   ctx.beginPath(); ctx.ellipse(x + 5, y + 7, r, r * 0.55, 0, 0, Math.PI * 2); ctx.fill();
@@ -186,6 +186,19 @@ function drawNest(ctx, x, y, r, hovered) {
     ctx.moveTo(x + Math.cos(angle) * r * 0.18, y + Math.sin(angle) * r * 0.11);
     ctx.lineTo(x + Math.cos(angle) * r * 0.62, y + Math.sin(angle) * r * 0.38);
     ctx.stroke();
+  }
+
+  // Occupant name tag
+  if (name) {
+    const fontSize = Math.max(10, Math.round(r * 0.55));
+    ctx.font = `bold ${fontSize}px Georgia, serif`;
+    ctx.textAlign = 'center';
+    const tw = ctx.measureText(name).width + 8;
+    // Pill background
+    ctx.fillStyle = 'rgba(30,12,4,0.72)';
+    rr(ctx, x - tw / 2, y + r * 0.68, tw, fontSize + 4, 3); ctx.fill();
+    ctx.fillStyle = '#f0d070';
+    ctx.fillText(name, x, y + r * 0.68 + fontSize);
   }
 
   // Hover ring
