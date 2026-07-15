@@ -1,6 +1,6 @@
 import { getMapCache, WORLD_W, WORLD_H, getDenAtPoint } from './map.js';
 import { renderPlayer, SPEED } from './player.js';
-import { renderDenInterior, renderSleepOverlay, getNestAtPoint, isLeaveBtn, isWakeBtn } from './den.js';
+import { renderDenInterior, renderSleepOverlay, getNestAtPoint, isLeaveBtn, isWakeBtn, canSleepOnNest } from './den.js';
 
 // ─── State ────────────────────────────────────────────────────────────────────
 const state = {
@@ -151,7 +151,7 @@ function handleClick(e) {
     if (state.popup) return;
 
     const nestIdx = getNestAtPoint(sx, sy, w, h);
-    if (nestIdx >= 0) handleNestClick(nestIdx);
+    if (nestIdx >= 0 && canSleepOnNest(player.name, nestIdx)) handleNestClick(nestIdx);
     return;
   }
 
@@ -171,7 +171,8 @@ function handleMouseMove(e) {
 
   if (denView) {
     if (!player.asleep) {
-      const idx = getNestAtPoint(sx, sy, canvas.width, canvas.height);
+      const raw = getNestAtPoint(sx, sy, canvas.width, canvas.height);
+      const idx = (raw >= 0 && canSleepOnNest(player.name, raw)) ? raw : -1;
       if (idx !== state.hoveredNest) {
         state.hoveredNest = idx;
       }

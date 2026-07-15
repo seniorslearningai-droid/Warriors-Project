@@ -121,6 +121,17 @@ export function isWakeBtn(sx, sy, w, h) {
   return sx >= bx && sx <= bx + bw && sy >= by && sy <= by + bh;
 }
 
+export function canSleepOnNest(playerName, nestIdx) {
+  const nest = NESTS[nestIdx];
+  if (!nest) return false;
+  const name = playerName.toLowerCase();
+  // Named nest → only that player may use it
+  if (nest.name && nest.name.toLowerCase() !== name) return false;
+  // Player has a named nest → they must sleep on their own, not an unnamed one
+  if (!nest.name && NESTS.some(n => n.name && n.name.toLowerCase() === name)) return false;
+  return true;
+}
+
 // ─── Draw helpers ─────────────────────────────────────────────────────────────
 
 function drawBeams(ctx, w, h) {
