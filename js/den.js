@@ -1,4 +1,5 @@
 import { renderPlayer } from './player.js';
+import { getSprite } from './sprites.js';
 
 const CAT_SCALE = 2.8;
 
@@ -48,8 +49,15 @@ export function renderDenInterior(ctx, w, h, den, player, hoveredNest) {
   // Player cat — larger scale, at bottom-center (entrance)
   ctx.save();
   ctx.translate(w / 2, h * 0.83);
-  ctx.scale(CAT_SCALE, CAT_SCALE);
-  renderPlayer(ctx, { ...player, x: 0, y: 0 }, true);
+  const sprite = getSprite(player.name);
+  if (sprite) {
+    // Draw sprite large — maintain photo aspect ratio (roughly 3:2)
+    const sh = h * 0.22, sw = sh * 1.5;
+    ctx.drawImage(sprite, -sw / 2, -sh * 0.75, sw, sh);
+  } else {
+    ctx.scale(CAT_SCALE, CAT_SCALE);
+    renderPlayer(ctx, { ...player, x: 0, y: 0 }, true);
+  }
   ctx.restore();
 
   // Den title at top
