@@ -1,19 +1,19 @@
-// Sprite cache — loads sprites/<name>.png and sprites/<name>-sleep.png
+// Sprite cache — loads sprites/<name>.png/.webp on first request
 const cache = new Map();
+
+function tryLoad(key, formats) {
+  if (!formats.length) return; // no format worked, stays null (uses drawn cat)
+  const [fmt, ...rest] = formats;
+  const img = new Image();
+  img.onload = () => cache.set(key, img);
+  img.onerror = () => tryLoad(key, rest); // try next format
+  img.src = `sprites/${key}.${fmt}`;
+}
 
 function load(key) {
   if (cache.has(key)) return;
-  cache.set(key, null); // mark loading
-  const img = new Image();
-  img.onload = () => cache.set(key, img);
-  img.onerror = () => {}; // silently absent
-  img.src = `sprites/${key}.png`;
-}
-
-export function preloadSprites(name) {
-  const n = name.toLowerCase();
-  load(n);
-  load(`${n}-sleep`);
+  cache.set(key, null); // mark as loading
+  tryLoad(key, ['png', 'webp', 'jpg']);
 }
 
 export function getSprite(name) {
