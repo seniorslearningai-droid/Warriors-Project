@@ -188,17 +188,13 @@ function drawNest(ctx, x, y, r, hovered, name) {
     ctx.stroke();
   }
 
-  // Occupant name tag
+  // Name written on the nest
   if (name) {
-    const fontSize = Math.max(10, Math.round(r * 0.55));
+    const fontSize = Math.max(7, Math.round(r * 0.32));
     ctx.font = `bold ${fontSize}px Georgia, serif`;
     ctx.textAlign = 'center';
-    const tw = ctx.measureText(name).width + 8;
-    // Pill background
-    ctx.fillStyle = 'rgba(30,12,4,0.72)';
-    rr(ctx, x - tw / 2, y + r * 0.68, tw, fontSize + 4, 3); ctx.fill();
-    ctx.fillStyle = '#f0d070';
-    ctx.fillText(name, x, y + r * 0.68 + fontSize);
+    ctx.fillStyle = 'rgba(60,30,5,0.85)';
+    ctx.fillText(name, x, y + r * 0.18 + fontSize * 0.35);
   }
 
   // Hover ring
