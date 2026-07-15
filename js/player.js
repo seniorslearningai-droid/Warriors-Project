@@ -8,20 +8,23 @@ export const RANK_COLORS = {
 };
 
 export function renderPlayer(ctx, player, isLocal) {
-  const { x, y, color = '#FF8C00', name = '?', rank = 'kit', asleep } = player;
+  const { x, y, color = '#FF8C00', name = '?', rank = 'kit', asleep, facing = 'right' } = player;
   ctx.save();
   ctx.translate(x, y);
 
+  // Draw sprite/shape flipped when facing left
+  ctx.save();
+  if (facing === 'left') ctx.scale(-1, 1);
   const sprite = asleep ? (getSleepSprite(name) || getSprite(name)) : getSprite(name);
   if (sprite) {
-    // Sleep sprite is roughly square; walking sprite is wider
     const sh = 34, sw = asleep ? sh : sh * 1.4;
     ctx.drawImage(sprite, -sw / 2, -sh / 2, sw, sh);
   } else {
     drawCatShape(ctx, color, isLocal, asleep);
   }
+  ctx.restore();
 
-  // Name tag always drawn on top
+  // Name tag always readable (not flipped)
   ctx.font = 'bold 10px sans-serif';
   ctx.textAlign = 'center';
   const tagY = -22;

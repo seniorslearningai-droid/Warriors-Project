@@ -9,7 +9,8 @@ const state = {
     color: '#FF8C00',
     name: 'You',
     rank: 'kit',
-    asleep: false
+    asleep: false,
+    facing: 'right'
   },
   camera: { x: 0, y: 0 },
   keys: {},
@@ -85,6 +86,8 @@ function update() {
   if (keys['ArrowUp']    || keys['w'] || keys['W']) dy -= SPEED;
   if (keys['ArrowDown']  || keys['s'] || keys['S']) dy += SPEED;
   if (dx && dy) { dx *= 0.707; dy *= 0.707; }
+  if (dx < 0) player.facing = 'left';
+  else if (dx > 0) player.facing = 'right';
 
   player.x = Math.max(60, Math.min(WORLD_W - 60, player.x + dx));
   player.y = Math.max(60, Math.min(WORLD_H - 60, player.y + dy));
