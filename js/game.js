@@ -17,8 +17,9 @@ const state = {
   ctx: null,
   nearDen: null,
   popup: null,
-  denView: null,     // area object when inside a den, null in world
-  hoveredNest: -1    // index of hovered nest (-1 = none)
+  denView: null,      // area object when inside a den, null in world
+  hoveredNest: -1,    // index of hovered nest (-1 = none)
+  sleepingNestIdx: -1 // which nest the player is sleeping in
 };
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
@@ -112,7 +113,7 @@ function render() {
 
   if (denView) {
     // Den interior — no camera offset, fixed viewport
-    renderDenInterior(ctx, canvas.width, canvas.height, denView, player, hoveredNest);
+    renderDenInterior(ctx, canvas.width, canvas.height, denView, player, hoveredNest, state.sleepingNestIdx);
     if (player.asleep) {
       renderSleepOverlay(ctx, canvas.width, canvas.height);
     }
@@ -150,7 +151,7 @@ function handleClick(e) {
     if (state.popup) return;
 
     const nestIdx = getNestAtPoint(sx, sy, w, h);
-    if (nestIdx >= 0) handleNestClick();
+    if (nestIdx >= 0) handleNestClick(nestIdx);
     return;
   }
 
@@ -201,15 +202,16 @@ function enterOrShowPopup(area) {
 function exitDen() {
   state.denView = null;
   state.hoveredNest = -1;
+  state.sleepingNestIdx = -1;
   state.player.asleep = false;
 }
 
-function handleNestClick() {
+function handleNestClick(nestIdx) {
+  state.sleepingNestIdx = nestIdx;
   const notes = getPlayerNotes();
   if (notes.length > 0) {
     showNotesPopup(notes);
   } else {
-    // No notes — sleep immediately
     state.player.asleep = true;
   }
 }

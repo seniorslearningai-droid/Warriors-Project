@@ -17,7 +17,7 @@ const NEST_R_FRAC = 0.068;
 
 // ─── Main render ─────────────────────────────────────────────────────────────
 
-export function renderDenInterior(ctx, w, h, den, player, hoveredNest) {
+export function renderDenInterior(ctx, w, h, den, player, hoveredNest, sleepingNestIdx = -1) {
   // Warm brown walls
   const wallGrad = ctx.createLinearGradient(0, 0, 0, h);
   wallGrad.addColorStop(0, '#2e1608');
@@ -59,12 +59,11 @@ export function renderDenInterior(ctx, w, h, den, player, hoveredNest) {
       renderPlayer(ctx, { ...player, x: 0, y: 0 }, true);
     }
     ctx.restore();
-  } else {
-    // Find this player's nest by name and draw sleeping sprite on it
-    const nestIdx = NESTS.findIndex(n => n.name && n.name.toLowerCase() === player.name.toLowerCase());
+  } else if (sleepingNestIdx >= 0 && sleepingNestIdx < NESTS.length) {
+    // Draw sleeping sprite on the exact nest that was clicked
+    const { x, y } = NESTS[sleepingNestIdx];
     const sleepSprite = getSleepSprite(player.name);
-    if (sleepSprite && nestIdx >= 0) {
-      const { x, y } = NESTS[nestIdx];
+    if (sleepSprite) {
       const size = nr * 2.6;
       ctx.drawImage(sleepSprite, x * w - size / 2, y * h - size * 0.55, size, size * 0.85);
     }
