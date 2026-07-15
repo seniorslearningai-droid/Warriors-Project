@@ -160,7 +160,8 @@ function handleClick(e) {
   const wx = sx + state.camera.x;
   const wy = sy + state.camera.y;
   const den = getDenAtPoint(wx, wy);
-  if (den) enterOrShowPopup(den);
+  // Only enter if the player is also touching this den's entrance
+  if (den && state.nearDen && den.id === state.nearDen.id) enterOrShowPopup(den);
 }
 
 function handleMouseMove(e) {
@@ -185,7 +186,8 @@ function handleMouseMove(e) {
 
   const wx = sx + state.camera.x;
   const wy = sy + state.camera.y;
-  canvas.style.cursor = getDenAtPoint(wx, wy) ? 'pointer' : 'default';
+  const hovered = getDenAtPoint(wx, wy);
+  canvas.style.cursor = (hovered && state.nearDen && hovered.id === state.nearDen.id) ? 'pointer' : 'default';
 }
 
 // ─── Den transitions ──────────────────────────────────────────────────────────
