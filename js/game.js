@@ -35,9 +35,10 @@ window.addEventListener('DOMContentLoaded', () => {
   if (saved) {
     try {
       const data = JSON.parse(saved);
-      state.player.name = data.name || 'You';
-      state.player.color = data.color || '#FF8C00';
-      state.player.rank = data.rank || 'kit';
+      const charData = CHARACTERS.find(c => c.name === data.name);
+      state.player.name  = data.name  || 'You';
+      state.player.color = charData?.color || data.color || '#FF8C00';
+      state.player.rank  = charData?.rank  || data.rank  || 'kit';
     } catch (_) {}
   } else {
     window.location.href = 'index.html';
