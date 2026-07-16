@@ -1,6 +1,7 @@
 import { getMapCache, WORLD_W, WORLD_H, getDenAtPoint } from './map.js';
 import { renderPlayer, SPEED } from './player.js';
 import { renderDenInterior, renderSleepOverlay, getNestAtPoint, isLeaveBtn, isWakeBtn, canSleepOnNest } from './den.js';
+import { getSprite, getSleepSprite } from './sprites.js';
 
 // ─── Characters ──────────────────────────────────────────────────────────────
 const CHARACTERS = [
@@ -68,6 +69,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   updateHUD();
   initCharPanel();
+  preloadSprites();
   requestAnimationFrame(loop);
 });
 
@@ -104,12 +106,12 @@ function update() {
   state.camera.x = Math.max(0, Math.min(WORLD_W - cw, player.x - cw / 2));
   state.camera.y = Math.max(0, Math.min(WORLD_H - ch, player.y - ch / 2));
 
-  // Den proximity prompt
+  // Den proximity prompt — only show if this character can enter
   const den = getDenAtPoint(player.x, player.y);
   state.nearDen = den;
   const prompt = document.getElementById('interaction-prompt');
   const promptText = document.getElementById('prompt-text');
-  if (den && prompt && promptText) {
+  if (den && canEnterDen(den) && prompt && promptText) {
     promptText.textContent = `[Click] Enter ${den.label}`;
     prompt.classList.remove('hidden');
   } else if (prompt) {
@@ -198,13 +200,23 @@ function handleMouseMove(e) {
   const wx = sx + state.camera.x;
   const wy = sy + state.camera.y;
   const hovered = getDenAtPoint(wx, wy);
-  canvas.style.cursor = (hovered && state.nearDen && hovered.id === state.nearDen.id) ? 'pointer' : 'default';
+  canvas.style.cursor = (hovered && state.nearDen && hovered.id === state.nearDen.id && canEnterDen(hovered)) ? 'pointer' : 'default';
 }
 
 // ─── Den transitions ──────────────────────────────────────────────────────────
+function canEnterDen(area) {
+  if (!area.restingSpot) return true; // popup-only areas always allowed
+  const name = state.player.name.toLowerCase();
+  const rank = state.player.rank;
+  if (area.id === 'jadewind_den') return name === 'jadewind';
+  if (area.id === 'deputy_den')   return rank === 'deputy';
+  if (area.forRank)               return rank === area.forRank;
+  return false;
+}
+
 function enterOrShowPopup(area) {
   if (area.restingSpot) {
-    // Direct entry — no popup
+    if (!canEnterDen(area)) return;
     state.denView = area;
     state.hoveredNest = -1;
     document.getElementById('interaction-prompt')?.classList.add('hidden');
@@ -296,6 +308,14 @@ function updateHUD() {
   const rankEl = document.getElementById('hud-rank');
   if (nameEl) nameEl.textContent = p.name;
   if (rankEl) rankEl.textContent = p.rank;
+}
+
+// ─── Sprite preload ───────────────────────────────────────────────────────────
+function preloadSprites() {
+  for (const char of CHARACTERS) {
+    getSprite(char.name);
+    getSleepSprite(char.name);
+  }
 }
 
 // ─── Character Panel ──────────────────────────────────────────────────────────

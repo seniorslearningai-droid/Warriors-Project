@@ -15,7 +15,7 @@ const WARRIORS_NESTS = [
 ];
 
 const JADEWIND_NESTS = [
-  { x: 0.5, y: 0.50, name: 'Jadewind' },
+  { x: 0.5, y: 0.50, name: 'Jadewind', large: true },
 ];
 
 const NEST_R_FRAC = 0.068;
@@ -72,10 +72,10 @@ export function renderDenInterior(ctx, w, h, den, player, hoveredNest, sleepingN
     }
     ctx.restore();
   } else if (sleepingNestIdx >= 0 && sleepingNestIdx < nests.length) {
-    const { x, y } = nests[sleepingNestIdx];
+    const { x, y, large } = nests[sleepingNestIdx];
     const sleepSprite = getSleepSprite(player.name);
     if (sleepSprite) {
-      const size = nr * 2.6;
+      const size = nr * 2.6 * (large ? 1.5 : 1);
       ctx.drawImage(sleepSprite, x * w - size / 2, y * h - size * 0.55, size, size * 0.85);
     }
   }
