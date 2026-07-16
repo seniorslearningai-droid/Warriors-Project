@@ -161,8 +161,8 @@ function handleClick(e) {
 
     if (state.popup) return;
 
-    const nestIdx = getNestAtPoint(sx, sy, w, h);
-    if (nestIdx >= 0 && canSleepOnNest(player.name, nestIdx)) handleNestClick(nestIdx);
+    const nestIdx = getNestAtPoint(sx, sy, w, h, denView.id);
+    if (nestIdx >= 0 && canSleepOnNest(player.name, nestIdx, denView.id)) handleNestClick(nestIdx);
     return;
   }
 
@@ -183,8 +183,8 @@ function handleMouseMove(e) {
 
   if (denView) {
     if (!player.asleep) {
-      const raw = getNestAtPoint(sx, sy, canvas.width, canvas.height);
-      const idx = (raw >= 0 && canSleepOnNest(player.name, raw)) ? raw : -1;
+      const raw = getNestAtPoint(sx, sy, canvas.width, canvas.height, denView.id);
+      const idx = (raw >= 0 && canSleepOnNest(player.name, raw, denView.id)) ? raw : -1;
       if (idx !== state.hoveredNest) {
         state.hoveredNest = idx;
       }

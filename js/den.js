@@ -3,8 +3,9 @@ import { getSprite, getSleepSprite } from './sprites.js';
 
 const CAT_SCALE = 2.8;
 
-// Nest positions as fractions of viewport (w, h)
-const NESTS = [
+// ─── Nest layouts per den ─────────────────────────────────────────────────────
+
+const WARRIORS_NESTS = [
   { x: 0.18, y: 0.46, name: 'Goldpelt' },
   { x: 0.38, y: 0.46, name: '' },
   { x: 0.62, y: 0.46, name: '' },
@@ -13,11 +14,22 @@ const NESTS = [
   { x: 0.72, y: 0.68, name: '' },
 ];
 
+const JADEWIND_NESTS = [
+  { x: 0.5, y: 0.50, name: 'Jadewind' },
+];
+
 const NEST_R_FRAC = 0.068;
+
+function getNests(denId) {
+  if (denId === 'jadewind_den') return JADEWIND_NESTS;
+  return WARRIORS_NESTS;
+}
 
 // ─── Main render ─────────────────────────────────────────────────────────────
 
 export function renderDenInterior(ctx, w, h, den, player, hoveredNest, sleepingNestIdx = -1) {
+  const nests = getNests(den.id);
+
   // Warm brown walls
   const wallGrad = ctx.createLinearGradient(0, 0, 0, h);
   wallGrad.addColorStop(0, '#2e1608');
@@ -41,9 +53,9 @@ export function renderDenInterior(ctx, w, h, den, player, hoveredNest, sleepingN
 
   // Nests
   const nr = w * NEST_R_FRAC;
-  for (let i = 0; i < NESTS.length; i++) {
-    const { x, y, name } = NESTS[i];
-    drawNest(ctx, x * w, y * h, nr, i === hoveredNest, name);
+  for (let i = 0; i < nests.length; i++) {
+    const { x, y, name } = nests[i];
+    drawNest(ctx, x * w, y * h, nr, i === hoveredNest, name, den.id === 'jadewind_den');
   }
 
   // Player awake → show at entrance; asleep → show sleeping sprite on their nest
@@ -59,9 +71,8 @@ export function renderDenInterior(ctx, w, h, den, player, hoveredNest, sleepingN
       renderPlayer(ctx, { ...player, x: 0, y: 0 }, true);
     }
     ctx.restore();
-  } else if (sleepingNestIdx >= 0 && sleepingNestIdx < NESTS.length) {
-    // Draw sleeping sprite on the exact nest that was clicked
-    const { x, y } = NESTS[sleepingNestIdx];
+  } else if (sleepingNestIdx >= 0 && sleepingNestIdx < nests.length) {
+    const { x, y } = nests[sleepingNestIdx];
     const sleepSprite = getSleepSprite(player.name);
     if (sleepSprite) {
       const size = nr * 2.6;
@@ -78,16 +89,14 @@ export function renderDenInterior(ctx, w, h, den, player, hoveredNest, sleepingN
   ctx.fillText(den.label, w / 2, h * 0.1);
   ctx.shadowBlur = 0;
 
-  // Leave Den button
-  drawLeaveBtn(ctx, h);
+  // Leave Den button — bottom-left, clear of the HUD
+  drawLeaveBtn(ctx, w, h);
 }
 
 export function renderSleepOverlay(ctx, w, h) {
-  // Subtle night tint — den and sleeping sprites on nests remain visible
   ctx.fillStyle = 'rgba(8, 4, 1, 0.38)';
   ctx.fillRect(0, 0, w, h);
 
-  // A few stars near the top
   ctx.fillStyle = 'rgba(220,230,255,0.7)';
   for (let i = 0; i < 22; i++) {
     const sx = lcg(i * 7 + 3, w);
@@ -101,10 +110,11 @@ export function renderSleepOverlay(ctx, w, h) {
 
 // ─── Hit testing ─────────────────────────────────────────────────────────────
 
-export function getNestAtPoint(sx, sy, w, h) {
+export function getNestAtPoint(sx, sy, w, h, denId = '') {
+  const nests = getNests(denId);
   const r = w * NEST_R_FRAC;
-  for (let i = 0; i < NESTS.length; i++) {
-    const { x, y } = NESTS[i];
+  for (let i = 0; i < nests.length; i++) {
+    const { x, y } = nests[i];
     if (Math.hypot(sx - x * w, sy - y * h) < r + 14) return i;
   }
   return -1;
@@ -112,7 +122,8 @@ export function getNestAtPoint(sx, sy, w, h) {
 
 export function isLeaveBtn(sx, sy, w, h) {
   const bw = 130, bh = Math.round(h * 0.056);
-  return sx >= 16 && sx <= 16 + bw && sy >= 16 && sy <= 16 + bh;
+  const bx = 16, by = h - bh - 16;
+  return sx >= bx && sx <= bx + bw && sy >= by && sy <= by + bh;
 }
 
 export function isWakeBtn(sx, sy, w, h) {
@@ -121,14 +132,13 @@ export function isWakeBtn(sx, sy, w, h) {
   return sx >= bx && sx <= bx + bw && sy >= by && sy <= by + bh;
 }
 
-export function canSleepOnNest(playerName, nestIdx) {
-  const nest = NESTS[nestIdx];
+export function canSleepOnNest(playerName, nestIdx, denId = '') {
+  const nests = getNests(denId);
+  const nest = nests[nestIdx];
   if (!nest) return false;
   const name = playerName.toLowerCase();
-  // Named nest → only that player may use it
   if (nest.name && nest.name.toLowerCase() !== name) return false;
-  // Player has a named nest → they must sleep on their own, not an unnamed one
-  if (!nest.name && NESTS.some(n => n.name && n.name.toLowerCase() === name)) return false;
+  if (!nest.name && nests.some(n => n.name && n.name.toLowerCase() === name)) return false;
   return true;
 }
 
@@ -182,18 +192,21 @@ function drawWoodFloor(ctx, w, h) {
   }
 }
 
-function drawNest(ctx, x, y, r, hovered, name) {
+function drawNest(ctx, x, y, r, hovered, name, large = false) {
+  const scale = large ? 1.5 : 1;
+  const er = r * scale, ey = r * 0.6 * scale;
+
   // Shadow
   ctx.fillStyle = 'rgba(0,0,0,0.28)';
-  ctx.beginPath(); ctx.ellipse(x + 5, y + 7, r, r * 0.55, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 5, y + 7, er, ey * 0.92, 0, 0, Math.PI * 2); ctx.fill();
 
   // Outer ring
   ctx.fillStyle = hovered ? '#b09030' : '#8a6520';
-  ctx.beginPath(); ctx.ellipse(x, y, r, r * 0.6, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x, y, er, ey, 0, 0, Math.PI * 2); ctx.fill();
 
   // Inner bowl
   ctx.fillStyle = hovered ? '#e0c050' : '#c09838';
-  ctx.beginPath(); ctx.ellipse(x, y, r * 0.68, r * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x, y, er * 0.68, ey * 0.70, 0, 0, Math.PI * 2); ctx.fill();
 
   // Straw lines
   ctx.strokeStyle = hovered ? '#a08018' : '#78540e';
@@ -201,43 +214,44 @@ function drawNest(ctx, x, y, r, hovered, name) {
   for (let i = 0; i < 10; i++) {
     const angle = (i / 10) * Math.PI * 2;
     ctx.beginPath();
-    ctx.moveTo(x + Math.cos(angle) * r * 0.18, y + Math.sin(angle) * r * 0.11);
-    ctx.lineTo(x + Math.cos(angle) * r * 0.62, y + Math.sin(angle) * r * 0.38);
+    ctx.moveTo(x + Math.cos(angle) * er * 0.18, y + Math.sin(angle) * ey * 0.18);
+    ctx.lineTo(x + Math.cos(angle) * er * 0.62, y + Math.sin(angle) * ey * 0.62);
     ctx.stroke();
   }
 
-  // Name written on the nest
+  // Name on nest
   if (name) {
-    const fontSize = Math.max(7, Math.round(r * 0.32));
+    const fontSize = Math.max(7, Math.round(r * (large ? 0.45 : 0.32)));
     ctx.font = `bold ${fontSize}px Georgia, serif`;
     ctx.textAlign = 'center';
     ctx.fillStyle = 'rgba(60,30,5,0.85)';
-    ctx.fillText(name, x, y + r * 0.18 + fontSize * 0.35);
+    ctx.fillText(name, x, y + ey * 0.30 + fontSize * 0.35);
   }
 
-  // Hover ring
+  // Hover ring + tooltip
   if (hovered) {
     ctx.strokeStyle = 'rgba(255,220,60,0.75)';
     ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.ellipse(x, y, r + 5, r * 0.6 + 5, 0, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(x, y, er + 5, ey + 5, 0, 0, Math.PI * 2); ctx.stroke();
 
     ctx.fillStyle = 'rgba(255,255,255,0.9)';
     ctx.font = 'bold 11px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Click to sleep', x, y - r - 8);
+    ctx.fillText('Click to sleep', x, y - er - 8);
   }
 }
 
-function drawLeaveBtn(ctx, h) {
+function drawLeaveBtn(ctx, w, h) {
   const bw = 130, bh = Math.round(h * 0.056);
+  const bx = 16, by = h - bh - 16;
   ctx.fillStyle = 'rgba(240,255,220,0.92)';
-  rr(ctx, 16, 16, bw, bh, 6); ctx.fill();
+  rr(ctx, bx, by, bw, bh, 6); ctx.fill();
   ctx.strokeStyle = '#70c030'; ctx.lineWidth = 2;
-  rr(ctx, 16, 16, bw, bh, 6); ctx.stroke();
+  rr(ctx, bx, by, bw, bh, 6); ctx.stroke();
   ctx.fillStyle = '#2a6010';
   ctx.font = `bold ${Math.round(bh * 0.52)}px Georgia, serif`;
   ctx.textAlign = 'center';
-  ctx.fillText('◀ Leave Den', 16 + bw / 2, 16 + bh * 0.70);
+  ctx.fillText('◀ Leave Den', bx + bw / 2, by + bh * 0.70);
 }
 
 function drawWakeBtn(ctx, w, h) {
