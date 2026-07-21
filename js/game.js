@@ -342,16 +342,40 @@ function renderCharPanel() {
   }
 }
 
+function saveCharPos(name) {
+  const { x, y, facing } = state.player;
+  localStorage.setItem('tribePos_' + name.toLowerCase(), JSON.stringify({ x, y, facing }));
+}
+
+function loadCharPos(name) {
+  try {
+    const d = JSON.parse(localStorage.getItem('tribePos_' + name.toLowerCase()));
+    if (d?.x != null && d?.y != null) return d;
+  } catch (_) {}
+  return null;
+}
+
 function switchCharacter(char) {
-  // Reset den state so nest permissions re-evaluate for the new character
-  if (state.denView) {
-    state.player.asleep = false;
-    state.sleepingNestIdx = -1;
-    state.hoveredNest = -1;
-  }
+  // Save outgoing character's position, then exit any den
+  saveCharPos(state.player.name);
+  state.denView = null;
+  state.player.asleep = false;
+  state.sleepingNestIdx = -1;
+  state.hoveredNest = -1;
+
+  // Switch identity
   state.player.name  = char.name;
   state.player.color = char.color;
   state.player.rank  = char.rank;
+
+  // Restore incoming character's last known position
+  const pos = loadCharPos(char.name);
+  if (pos) {
+    state.player.x      = pos.x;
+    state.player.y      = pos.y;
+    state.player.facing = pos.facing || 'right';
+  }
+
   localStorage.setItem('tribeCat', JSON.stringify({ name: char.name, color: char.color, rank: char.rank }));
   updateHUD();
   renderCharPanel();
