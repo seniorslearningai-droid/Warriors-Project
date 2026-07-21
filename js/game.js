@@ -5,8 +5,8 @@ import { getSprite, getSleepSprite } from './sprites.js';
 
 // ─── Characters ──────────────────────────────────────────────────────────────
 const CHARACTERS = [
-  { name: 'Goldpelt', rank: 'warrior', color: '#FF8C00', sprite: 'sprites/goldpelt.png?v=3' },
-  { name: 'Jadewind', rank: 'leader',  color: '#b87040', sprite: 'sprites/jadewind.png?v=3' },
+  { name: 'Goldpelt', rank: 'warrior', color: '#FF8C00', sprite: 'sprites/goldpelt.png?v=3', denId: 'warrior_den' },
+  { name: 'Jadewind', rank: 'leader',  color: '#b87040', sprite: 'sprites/jadewind.png?v=3', denId: 'jadewind_den' },
 ];
 
 // ─── State ────────────────────────────────────────────────────────────────────
@@ -106,12 +106,12 @@ function update() {
   state.camera.x = Math.max(0, Math.min(WORLD_W - cw, player.x - cw / 2));
   state.camera.y = Math.max(0, Math.min(WORLD_H - ch, player.y - ch / 2));
 
-  // Den proximity prompt — only show if this character can enter
+  // Den proximity prompt
   const den = getDenAtPoint(player.x, player.y);
   state.nearDen = den;
   const prompt = document.getElementById('interaction-prompt');
   const promptText = document.getElementById('prompt-text');
-  if (den && canEnterDen(den) && prompt && promptText) {
+  if (den && prompt && promptText) {
     promptText.textContent = `[Click] Enter ${den.label}`;
     prompt.classList.remove('hidden');
   } else if (prompt) {
@@ -164,7 +164,7 @@ function handleClick(e) {
     if (state.popup) return;
 
     const nestIdx = getNestAtPoint(sx, sy, w, h, denView.id);
-    if (nestIdx >= 0 && canSleepOnNest(player.name, nestIdx, denView.id)) handleNestClick(nestIdx);
+    if (nestIdx >= 0 && getPlayerHomeDen() === denView.id && canSleepOnNest(player.name, nestIdx, denView.id)) handleNestClick(nestIdx);
     return;
   }
 
@@ -186,7 +186,7 @@ function handleMouseMove(e) {
   if (denView) {
     if (!player.asleep) {
       const raw = getNestAtPoint(sx, sy, canvas.width, canvas.height, denView.id);
-      const idx = (raw >= 0 && canSleepOnNest(player.name, raw, denView.id)) ? raw : -1;
+      const idx = (raw >= 0 && getPlayerHomeDen() === denView.id && canSleepOnNest(player.name, raw, denView.id)) ? raw : -1;
       if (idx !== state.hoveredNest) {
         state.hoveredNest = idx;
       }
@@ -200,23 +200,12 @@ function handleMouseMove(e) {
   const wx = sx + state.camera.x;
   const wy = sy + state.camera.y;
   const hovered = getDenAtPoint(wx, wy);
-  canvas.style.cursor = (hovered && state.nearDen && hovered.id === state.nearDen.id && canEnterDen(hovered)) ? 'pointer' : 'default';
+  canvas.style.cursor = (hovered && state.nearDen && hovered.id === state.nearDen.id) ? 'pointer' : 'default';
 }
 
 // ─── Den transitions ──────────────────────────────────────────────────────────
-function canEnterDen(area) {
-  if (!area.restingSpot) return true; // popup-only areas always allowed
-  const name = state.player.name.toLowerCase();
-  const rank = state.player.rank;
-  if (area.id === 'jadewind_den') return name === 'jadewind';
-  if (area.id === 'deputy_den')   return rank === 'deputy';
-  if (area.forRank)               return rank === area.forRank;
-  return false;
-}
-
 function enterOrShowPopup(area) {
   if (area.restingSpot) {
-    if (!canEnterDen(area)) return;
     state.denView = area;
     state.hoveredNest = -1;
     document.getElementById('interaction-prompt')?.classList.add('hidden');
@@ -308,6 +297,10 @@ function updateHUD() {
   const rankEl = document.getElementById('hud-rank');
   if (nameEl) nameEl.textContent = p.name;
   if (rankEl) rankEl.textContent = p.rank;
+}
+
+function getPlayerHomeDen() {
+  return CHARACTERS.find(c => c.name === state.player.name)?.denId ?? null;
 }
 
 // ─── Sprite preload ───────────────────────────────────────────────────────────
